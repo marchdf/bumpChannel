@@ -26,7 +26,7 @@ linear_solvers:
 realms:
 
   - name: realm_1
-    mesh: grid_struct_89x41_vol_ndtw.exo
+    mesh: bump_struct_89x41_vol_ndtw.exo
     use_edges: yes
     check_for_missing_bcs: yes
     automatic_decomposition_type: rcb
@@ -101,7 +101,11 @@ realms:
         specific_dissipation_rate: 5881.4783
 
     - symmetry_boundary_condition: bc_symBottom
-      target_name: bottomsym
+      target_name: bottomsym_in
+      symmetry_user_data:
+
+    - symmetry_boundary_condition: bc_symBottom
+      target_name: bottomsym_out
       symmetry_user_data:
 
     - open_boundary_condition: bc_open
