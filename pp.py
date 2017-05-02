@@ -52,9 +52,11 @@ def get_wall_values(enames):
                for ss in dat.variables['ss_names'][:]]
         vn = ["%s" % nc.chartostring(nn)
               for nn in dat.variables['name_nod_var'][:]]
-        idx_ss = ssn.index("b'bottomwall'")
-        idx_tw = vn.index("b'tau_wall'")
-        idx_p = vn.index("b'pressure'")
+        ### JAM: removed the "b'*'" from the begging of these arguments, 
+        ###      not sure why they were there?
+        idx_ss = ssn.index("bottomwall")
+        idx_tw = vn.index("tau_wall")
+        idx_p = vn.index("pressure")
 
         # Get wall x coordinates
         try:
@@ -74,15 +76,16 @@ def get_wall_values(enames):
         wall_connect1 = wall_connect1[unique_idx]
 
         # Get wall variables
-        tau_wall = dat.variables[
-            'vals_nod_var{0:d}'.format(idx_tw + 1)][-1, wall_connect1]
-        pressure = dat.variables[
-            'vals_nod_var{0:d}'.format(idx_p + 1)][-1, wall_connect1]
+        if (wall_connect1.size > 0):
+            tau_wall = dat.variables[
+                'vals_nod_var{0:d}'.format(idx_tw + 1)][-1, wall_connect1]
+            pressure = dat.variables[
+                'vals_nod_var{0:d}'.format(idx_p + 1)][-1, wall_connect1]
 
-        # To dataframe
-        df = pd.DataFrame(data=np.vstack((wall_x, tau_wall, pressure)).T,
+            # To dataframe
+            df = pd.DataFrame(data=np.vstack((wall_x, tau_wall, pressure)).T,
                           columns=['x', 'tau_wall', 'pressure'])
-        lst.append(df)
+            lst.append(df)
 
     # Save
     dfw = pd.concat(lst, ignore_index=True)
@@ -105,8 +108,9 @@ def get_ux_front(enames):
         vn = ["%s" % nc.chartostring(nn)
               for nn in dat.variables['name_nod_var'][:]]
 
-        idx_front = ssn.index("b'front'")
-        idx_ux = vn.index("b'velocity_x'")
+        ### JAM : Removed b... see above note
+        idx_front = ssn.index("front")
+        idx_ux = vn.index("velocity_x")
 
         try:
             front_elem_idx = dat.variables[
@@ -158,22 +162,22 @@ if __name__ == '__main__':
 
     # ========================================================================
     # Setup
-    ppdirs = ['35x25', "69x49", "137x97", "273x193", "545x385"]
+    ppdirs = ['89x41', "177x81", "353x161", "705x321", "1409x641"]
     fdirs = [os.path.abspath(fdir) for fdir in ppdirs]
     rdirs = [os.path.join(fdir, 'results') for fdir in fdirs]
     ocname = os.path.join(os.path.abspath('.'), 'coeffs.dat')
     ocfname = os.path.join(os.path.abspath('.'), 'cf.dat')
-    colnames = ['N2', 'h', 'cp', 'cd', 'cl']
+    colnames = ['N2', 'h', 'cd', 'cdp', 'cdv', 'cl']
     dfc = pd.DataFrame(index=ppdirs, columns=colnames)
-    dfcf = pd.DataFrame(index=ppdirs, columns=['N2', 'h', 'xslice', 'cf'])
+    dfcf = pd.DataFrame(index=ppdirs, columns=['N2', 'h', 'xslice', 'cf', 'cp', 'cd', 'cl'])
 
     # ========================================================================
     # Post-process
     for ppdir, fdir, rdir in zip(ppdirs, fdirs, rdirs):
         print('Post-processing directory:', ppdir)
-        fname = os.path.join(rdir, 'flatPlate.dat')
-        yname = os.path.join(fdir, 'flatPlate.i')
-        enames = glob.glob(os.path.join(rdir, 'flatPlate.e*'))
+        fname = os.path.join(rdir, 'bumpChannel.dat')
+        yname = os.path.join(fdir, 'bumpChannel.i')
+        enames = glob.glob(os.path.join(rdir, 'bumpChannel.e*'))
         owname = os.path.join(rdir, 'wall_coeffs.dat')
         ouname = os.path.join(rdir, 'yp_up.dat')
 
@@ -222,21 +226,27 @@ if __name__ == '__main__':
         # Integrate to get theta and other quantities (and save)
         # The integral bound is where u is less than 99.5% of the freestream
         # velocity
-        theta = []
-        for i in range(ux.shape[0]):
-            idx = ux[i, :] < 0.995 * u0
-            theta.append(spi.simps(ux[i, idx] / u0 *
-                                   (1 - ux[i, idx] / u0), z[i, idx]))
-        dfw['theta'] = theta
-        dfw['retheta'] = rho0 * u0 * dfw['theta'] / mu
 
-        # Get y+ and u+ at Re-theta = 10000 (or next best thing)
-        idx = np.argmin(np.fabs(dfw['retheta'] - 10000))
-        up = ux[idx, :] / np.sqrt(dfw['tau_wall'][idx] / rho0)
-        yp = z[idx, :] * np.sqrt(dfw['tau_wall'][idx] / rho0) / (mu / rho0)
+        ##########**********JAM: FIXME: This part is commented out casue it is
+        #                               causing issues with the bumpChannel, it
+        #                               doens't necessarily seemed needed either?
+        #theta = []
+        #for i in range(ux.shape[0]):
+        #    idx = ux[i, :] < 0.995 * u0
+        #    theta.append(spi.simps(ux[i, idx] / u0 *
+        #                           (1 - ux[i, idx] / u0), z[i, idx]))
+        #
+        #dfw['theta'] = theta
+        #dfw['retheta'] = rho0 * u0 * dfw['theta'] / mu
 
-        odf = pd.DataFrame(data=np.vstack((z[idx, :], yp, up)).T,
-                           columns=['z', 'yp', 'up'])
+        ## Get y+ and u+ at Re-theta = 10000 (or next best thing)
+        #idx = np.argmin(np.fabs(dfw['retheta'] - 10000))
+        #up = ux[idx, :] / np.sqrt(dfw['tau_wall'][idx] / rho0)
+        #yp = z[idx, :] * np.sqrt(dfw['tau_wall'][idx] / rho0) / (mu / rho0)
+
+        #odf = pd.DataFrame(data=np.vstack((z[idx, :], yp, up)).T,
+        #                   columns=['z', 'yp', 'up'])
+        ##########********** END FIXME
 
         # ---------------------------------------------
         # Save
@@ -253,7 +263,9 @@ if __name__ == '__main__':
         dfcf.loc[ppdir] = [N2, h, xslice3, cf_slice3, cp_slice3,
                            df['cd'].iloc[-1], df['cl'].iloc[-1]]
         dfw.to_csv(owname, index=False)
-        odf.to_csv(ouname, index=False)
+
+        # JAM: FIXME: commented out due to association with above commented out part
+        #odf.to_csv(ouname, index=False)
 
     # Save the coefficients in a convenient table
     dfc.to_csv(ocname)
