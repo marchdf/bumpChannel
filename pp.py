@@ -58,6 +58,34 @@ def get_wall_values(enames):
         idx_tw = vn.index("tau_wall")
         idx_p = vn.index("pressure")
 
+        #######***************************************************************************##############
+        ### JAM: This is the replacement code
+
+        listSize = dat.variables['coordx'].size
+        dArray = []
+        # Loop through the dataset to extract the desired variables
+        for i in range(0,listSize):
+            # tau_wall should only be defined on the wall, so use that as a "flag" to
+            # identify which are wall values
+            if (dat.variables['vals_nod_var{0:d}'.format(idx_tw + 1)][-1][i] > 0.0):
+                dArray.append([dat.variables['coordx'][i],dat.variables['coordz'][i],
+                   dat.variables['vals_nod_var{0:d}'.format(idx_tw + 1)][-1][i],
+                   dat.variables['vals_nod_var{0:d}'.format(idx_p + 1)][-1][i]])
+
+        # To dataframe
+        # Transpose the dataArray and append to list (assuming its non-empty)
+        if (len(dArray) > 0):
+            tdArray = map(list, zip(*dArray))
+            df = pd.DataFrame(data=np.vstack((tdArray[0],tdArray[2],tdArray[3])).T,
+                          columns=['x', 'tau_wall', 'pressure'])
+            lst.append(df)
+        #######***************************************************************************##############
+
+
+        #######***************************************************************************##############
+        ### JAM: Commented this out as it seems to not capture all the wall points,
+        ###      I have replaced it with the above method for capturing wall values
+        """        
         # Get wall x coordinates
         try:
             wall_elem_idx = dat.variables[
@@ -82,10 +110,12 @@ def get_wall_values(enames):
             pressure = dat.variables[
                 'vals_nod_var{0:d}'.format(idx_p + 1)][-1, wall_connect1]
 
-            # To dataframe
-            df = pd.DataFrame(data=np.vstack((wall_x, tau_wall, pressure)).T,
+        # To dataframe
+        df = pd.DataFrame(data=np.vstack((wall_x, tau_wall, pressure)).T,
                           columns=['x', 'tau_wall', 'pressure'])
-            lst.append(df)
+        lst.append(df)
+        """
+        #######***************************************************************************##############
 
     # Save
     dfw = pd.concat(lst, ignore_index=True)
@@ -162,7 +192,7 @@ if __name__ == '__main__':
 
     # ========================================================================
     # Setup
-    ppdirs = ['89x41', "177x81", "353x161", "705x321", "1409x641"]
+    ppdirs = ['89x41', "177x81", "353x161"]# "705x321", "1409x641"]
     fdirs = [os.path.abspath(fdir) for fdir in ppdirs]
     rdirs = [os.path.join(fdir, 'results') for fdir in fdirs]
     ocname = os.path.join(os.path.abspath('.'), 'coeffs.dat')
