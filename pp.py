@@ -213,7 +213,7 @@ if __name__ == '__main__':
         ouname = os.path.join(rdir, 'yp_up.dat')
 
         # Derived quantities
-        L = 2.0
+        L = 1.5 
         W = 1.0
         area = L * W
         u0, rho0, mu = parse_ic(yname)

@@ -26,7 +26,9 @@ cmap = ['#EE2E2F', '#008C48', '#185AA9', '#F47D23',
 dashseq = [(None, None), [10, 5], [10, 4, 3, 4], [
     3, 3], [10, 4, 3, 4, 3, 4], [3, 3], [3, 3]]
 markertype = ['s', 'd', 'o', 'p', 'h']
-
+# scale is used to adjust issues in pp.py area lengthscale without having
+# to rerun
+scale = 4.0/3.0
 
 # ========================================================================
 #
@@ -173,20 +175,20 @@ if __name__ == '__main__':
 
     subdf = df[np.fabs(df['xslice'] - 0.75) < 1e-14]
     plt.figure(0)
-    plt.semilogx(subdf['h'], subdf['cf'], lw=2, color=cmap[1],
-                 marker=markertype[1], mec=cmap[1], mfc=cmap[1], ms=10,
+    plt.semilogx(subdf['h'], subdf['cf'], lw=2, color=cmap[2],
+                 marker=markertype[1], mec=cmap[2], mfc=cmap[2], ms=10,
                  label='Nalu')
 
     subdf = df[np.fabs(df['xslice'] - 0.6321975) < 1e-14]
     plt.figure(1)
-    plt.semilogx(subdf['h'], subdf['cf'], lw=2, color=cmap[1],
-                 marker=markertype[1], mec=cmap[1], mfc=cmap[1], ms=10,
+    plt.semilogx(subdf['h'], subdf['cf'], lw=2, color=cmap[2],
+                 marker=markertype[1], mec=cmap[2], mfc=cmap[2], ms=10,
                  label='Nalu')
 
     subdf = df[np.fabs(df['xslice'] - 0.8678025) < 1e-14]
     plt.figure(2)
-    plt.semilogx(subdf['h'], subdf['cf'], lw=2, color=cmap[1],
-                 marker=markertype[1], mec=cmap[1], mfc=cmap[1], ms=10,
+    plt.semilogx(subdf['h'], subdf['cf'], lw=2, color=cmap[2],
+                 marker=markertype[1], mec=cmap[2], mfc=cmap[2], ms=10,
                  label='Nalu')
 
     # Other coefficients
@@ -194,30 +196,30 @@ if __name__ == '__main__':
     df = pd.read_csv(fname)
 
     plt.figure(3)
-    plt.semilogx(df['h'], df['cd'], lw=2, color=cmap[1], marker=markertype[1],
-                 mec=cmap[1], mfc=cmap[1], ms=10, label='Nalu')
+    plt.semilogx(df['h'], df['cd']*scale, lw=2, color=cmap[2], marker=markertype[1],
+                 mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     plt.figure(4)
-    plt.semilogx(df['h'], df['cdp'], lw=2, color=cmap[1], marker=markertype[1],
-                 mec=cmap[1], mfc=cmap[1], ms=10, label='Nalu')
+    plt.semilogx(df['h'], df['cdp']*scale, lw=2, color=cmap[2], marker=markertype[1],
+                 mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     plt.figure(5)
-    plt.semilogx(df['h'], df['cdv'], lw=2, color=cmap[1], marker=markertype[1],
-                 mec=cmap[1], mfc=cmap[1], ms=10, label='Nalu')
+    plt.semilogx(df['h'], df['cdv']*scale, lw=2, color=cmap[2], marker=markertype[1],
+                 mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     plt.figure(6)
-    plt.semilogx(df['h'], df['cl'], lw=2, color=cmap[1], marker=markertype[1],
-                 mec=cmap[1], mfc=cmap[1], ms=10, label='Nalu')
+    plt.semilogx(df['h'], df['cl']*scale, lw=2, color=cmap[2], marker=markertype[1],
+                 mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     # wall cf and cp
     df = pd.read_csv('1409x641/results/wall_coeffs.dat')
 
     plt.figure(7)
-    p = plt.plot(df['x'], df['cf'], lw=2, color=cmap[1], label='Nalu')
+    p = plt.plot(df['x'], df['cf'], lw=2, color=cmap[2], label='Nalu')
     p[0].set_dashes(dashseq[1])
 
     plt.figure(8)
-    p = plt.plot(df['x'], df['cp'], lw=2, color=cmap[1], label='Nalu')
+    p = plt.plot(df['x'], df['cp'], lw=2, color=cmap[2], label='Nalu')
     p[0].set_dashes(dashseq[1])
 
     # ========================================================================
