@@ -199,10 +199,11 @@ if __name__ == '__main__':
     ocfname = os.path.join(os.path.abspath('.'), 'cf.dat')
     colnames = ['N2', 'h', 'cd', 'cdp', 'cdv', 'cl']
     dfc = pd.DataFrame(index=ppdirs, columns=colnames)
-    dfcf = pd.DataFrame(index=ppdirs, columns=['N2', 'h', 'xslice', 'cf', 'cp', 'cd', 'cl'])
+    dfcf = pd.DataFrame(index=ppdirs, columns=['ppdir', 'N2', 'h', 'xslice', 'cf', 'cp', 'cd', 'cl'])
 
     # ========================================================================
     # Post-process
+    cnt = 0
     for ppdir, fdir, rdir in zip(ppdirs, fdirs, rdirs):
         print('Post-processing directory:', ppdir)
         fname = os.path.join(rdir, 'bumpChannel.dat')
@@ -286,11 +287,14 @@ if __name__ == '__main__':
         dfc.loc[ppdir] = [N2, h, df['cd'].iloc[-1],
                           df['cdp'].iloc[-1], df['cdv'].iloc[-1],
                           df['cl'].iloc[-1]]
-        dfcf.loc[ppdir] = [N2, h, xslice1, cf_slice1, cp_slice1,
+        cnt = cnt + 1
+        dfcf.loc[cnt] = [ppdir, N2, h, xslice1, cf_slice1, cp_slice1,
                            df['cd'].iloc[-1], df['cl'].iloc[-1]]
-        dfcf.loc[ppdir] = [N2, h, xslice2, cf_slice2, cp_slice2,
+        cnt = cnt + 1
+        dfcf.loc[cnt] = [ppdir, N2, h, xslice2, cf_slice2, cp_slice2,
                            df['cd'].iloc[-1], df['cl'].iloc[-1]]
-        dfcf.loc[ppdir] = [N2, h, xslice3, cf_slice3, cp_slice3,
+        cnt = cnt + 1
+        dfcf.loc[cnt] = [ppdir, N2, h, xslice3, cf_slice3, cp_slice3,
                            df['cd'].iloc[-1], df['cl'].iloc[-1]]
         dfw.to_csv(owname, index=False)
 
