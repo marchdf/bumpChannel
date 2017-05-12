@@ -26,9 +26,6 @@ cmap = ['#EE2E2F', '#008C48', '#185AA9', '#F47D23',
 dashseq = [(None, None), [10, 5], [10, 4, 3, 4], [
     3, 3], [10, 4, 3, 4, 3, 4], [3, 3], [3, 3]]
 markertype = ['s', 'd', 'o', 'p', 'h']
-# scale is used to adjust issues in pp.py area lengthscale without having
-# to rerun
-scale = 4.0/3.0
 
 # ========================================================================
 #
@@ -196,19 +193,19 @@ if __name__ == '__main__':
     df = pd.read_csv(fname)
 
     plt.figure(3)
-    plt.semilogx(df['h'], df['cd']*scale, lw=2, color=cmap[2], marker=markertype[1],
+    plt.semilogx(df['h'], df['cd'], lw=2, color=cmap[2], marker=markertype[1],
                  mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     plt.figure(4)
-    plt.semilogx(df['h'], df['cdp']*scale, lw=2, color=cmap[2], marker=markertype[1],
+    plt.semilogx(df['h'], df['cdp'], lw=2, color=cmap[2], marker=markertype[1],
                  mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     plt.figure(5)
-    plt.semilogx(df['h'], df['cdv']*scale, lw=2, color=cmap[2], marker=markertype[1],
+    plt.semilogx(df['h'], df['cdv'], lw=2, color=cmap[2], marker=markertype[1],
                  mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     plt.figure(6)
-    plt.semilogx(df['h'], df['cl']*scale, lw=2, color=cmap[2], marker=markertype[1],
+    plt.semilogx(df['h'], df['cl'], lw=2, color=cmap[2], marker=markertype[1],
                  mec=cmap[2], mfc=cmap[2], ms=10, label='Nalu')
 
     # wall cf and cp

@@ -151,7 +151,7 @@ def get_ux_front(enames):
         front_connect1 = dat.variables['connect1'][
             front_elem_idx].flatten() - 1
         front_coordx = dat.variables['coordx'][front_connect1]
-        front_coordy = dat.variables['coordy'][front_connect1]
+        front_coordy = dat.variables['coord'][front_connect1]
         front_coordz = dat.variables['coordz'][front_connect1]
 
         actual_idx = np.where(front_coordy >= 0.0)
@@ -192,7 +192,7 @@ if __name__ == '__main__':
 
     # ========================================================================
     # Setup
-    ppdirs = ['89x41', "177x81", "353x161"]# "705x321", "1409x641"]
+    ppdirs = ["177x81"]# "705x321", "1409x641"]
     fdirs = [os.path.abspath(fdir) for fdir in ppdirs]
     rdirs = [os.path.join(fdir, 'results') for fdir in fdirs]
     ocname = os.path.join(os.path.abspath('.'), 'coeffs.dat')
@@ -227,7 +227,8 @@ if __name__ == '__main__':
         df = pd.read_csv(fname, delim_whitespace=True)
 
         # Calculate coefficients
-        df['cl'] = (df['Fpy'] + df['Fvy']) / (dynPres * area)
+        # JAM: lift force is the upward direction which here is the z direction
+        df['cl'] = (df['Fpz'] + df['Fvz']) / (dynPres * area)
         df['cd'] = (df['Fpx'] + df['Fvx']) / (dynPres * area)
         df['cdp'] = df['Fpx'] / (dynPres * area)
         df['cdv'] = df['Fvx'] / (dynPres * area)
@@ -236,7 +237,7 @@ if __name__ == '__main__':
         xslice1 = 0.75
         cf_slice1 = np.interp(xslice1, dfw['x'], dfw['cf'])
         cp_slice1 = np.interp(xslice1, dfw['x'], dfw['cp'])
-        xslice2 = 0.6321075
+        xslice2 = 0.6321975
         cf_slice2 = np.interp(xslice2, dfw['x'], dfw['cf'])
         cp_slice2 = np.interp(xslice2, dfw['x'], dfw['cp'])
         xslice3 = 0.8678025
