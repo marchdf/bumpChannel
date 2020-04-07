@@ -24,19 +24,17 @@ A.  Generating the meshes
 
 1. Get CGNS mesh from [the NASA website](https://turbmodels.larc.nasa.gov/bump_grids.html)
 2. Use Pointwise to label the surfaces and set the BC
-3. Use Shreyas' [near-distance-to-wall calculator](https://github.com/NaluCFD/NaluWindUtils) to get the NDTW. THIS NEEDS TO BE CHANGED.
 
 B. Running
 
 ```
-mpiexec -np 1 ./naluX -i bumpChannel.i
+mpiexec -np 1 ./naluX -i bumpChannel.yaml
 ```
 
 C. Post-processing
 ```
 ./pp.py # reads Nalu data, generates tables of quantities of interest
 ./plot_verification.py
-./plot_validation.py
 ```
 
 ## RANS SST 
