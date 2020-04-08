@@ -187,6 +187,25 @@ if __name__ == "__main__":
     p = plt.plot(df["x"], df["cp"], lw=2, color=cmap[0], label="NASA CFL3D")
     p[0].set_dashes(dashseq[0])
 
+    # profiles
+    fname = os.path.join(os.path.abspath("nasa_data"), "mut_profile_cfl3d.dat")
+    df = pd.read_csv(fname, delim_whitespace=True)
+
+    plt.figure(9)
+    p = plt.plot(df["mut"], df["y"], lw=2, color=cmap[0], label="NASA CFL3D")
+    p[0].set_dashes(dashseq[0])
+
+    fname = os.path.join(os.path.abspath("nasa_data"), "k_sdr_profile_cfl3d.dat")
+    df = pd.read_csv(fname, delim_whitespace=True)
+
+    plt.figure(10)
+    p = plt.loglog(df["tke"], df["y"] - 0.05, lw=2, color=cmap[0], label="NASA CFL3D")
+    p[0].set_dashes(dashseq[0])
+
+    plt.figure(11)
+    p = plt.loglog(df["sdr"], df["y"] - 0.05, lw=2, color=cmap[0], label="NASA CFL3D")
+    p[0].set_dashes(dashseq[0])
+
     # ======================================================================
     # NASA FUN3D output
 
@@ -304,6 +323,25 @@ if __name__ == "__main__":
     p = plt.plot(df["x"], df["cp"], lw=2, color=cmap[1], label="NASA FUN3D")
     p[0].set_dashes(dashseq[1])
 
+    # profiles
+    fname = os.path.join(os.path.abspath("nasa_data"), "mut_profile_fun3d.dat")
+    df = pd.read_csv(fname, delim_whitespace=True)
+
+    plt.figure(9)
+    p = plt.plot(df["mut"], df["y"], lw=2, color=cmap[1], label="NASA FUN3D")
+    p[0].set_dashes(dashseq[1])
+
+    fname = os.path.join(os.path.abspath("nasa_data"), "k_sdr_profile_fun3d.dat")
+    df = pd.read_csv(fname, delim_whitespace=True)
+
+    plt.figure(10)
+    p = plt.loglog(df["tke"], df["y"] - 0.05, lw=2, color=cmap[1], label="NASA FUN3D")
+    p[0].set_dashes(dashseq[1])
+
+    plt.figure(11)
+    p = plt.loglog(df["sdr"], df["y"] - 0.05, lw=2, color=cmap[1], label="NASA FUN3D")
+    p[0].set_dashes(dashseq[1])
+
     # ======================================================================
     # Nalu output
 
@@ -412,15 +450,31 @@ if __name__ == "__main__":
     )
 
     # wall cf and cp
-    df = pd.read_csv("1409x641/results/wall_coeffs.dat")
+    fdir = "1409x641"
+    df = pd.read_csv(os.path.join(fdir, "results", "wall_coeffs.dat"))
 
     plt.figure(7)
     p = plt.plot(df["x"], df["cf"], lw=2, color=cmap[2], label="Nalu")
-    p[0].set_dashes(dashseq[1])
+    p[0].set_dashes(dashseq[2])
 
     plt.figure(8)
     p = plt.plot(df["x"], df["cp"], lw=2, color=cmap[2], label="Nalu")
-    p[0].set_dashes(dashseq[1])
+    p[0].set_dashes(dashseq[2])
+
+    # profiles
+    df = pd.read_csv(os.path.join(fdir, "results", "profiles.dat"))
+
+    plt.figure(9)
+    p = plt.plot(df["nut"], df["z"], lw=2, color=cmap[2], label="Nalu")
+    p[0].set_dashes(dashseq[2])
+
+    plt.figure(10)
+    p = plt.loglog(df["tke"], df["z"] - 0.05, lw=2, color=cmap[2], label="Nalu")
+    p[0].set_dashes(dashseq[2])
+
+    plt.figure(11)
+    p = plt.loglog(df["sdr"], df["z"] - 0.05, lw=2, color=cmap[2], label="Nalu")
+    p[0].set_dashes(dashseq[2])
 
     # ========================================================================
     # Format the plots
@@ -526,6 +580,48 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig("wall_cp.pdf", format="pdf")
     plt.savefig("wall_cp.png", format="png")
+
+    plt.figure(9)
+    ax = plt.gca()
+    plt.xlabel(r"$\mu_t / \mu_\infty$", fontsize=22, fontweight="bold")
+    plt.ylabel(r"$y~[m]$", fontsize=22, fontweight="bold")
+    plt.setp(ax.get_xmajorticklabels(), fontsize=18, fontweight="bold")
+    plt.setp(ax.get_ymajorticklabels(), fontsize=18, fontweight="bold")
+    plt.ylim([0.05, 0.065])
+    legend = ax.legend(loc="best")
+    plt.tight_layout()
+    plt.savefig("nut.pdf", format="pdf")
+    plt.savefig("nut.png", format="png")
+
+    plt.figure(10)
+    ax = plt.gca()
+    plt.xlabel(r"$k / a_\infty^2$", fontsize=22, fontweight="bold")
+    plt.ylabel(r"$y - 0.05~[m]$", fontsize=22, fontweight="bold")
+    plt.setp(ax.get_xmajorticklabels(), fontsize=18, fontweight="bold")
+    plt.setp(ax.get_ymajorticklabels(), fontsize=18, fontweight="bold")
+    plt.xlim([1e-11, 1e-3])
+    plt.ylim([1e-7, 1e-1])
+    legend = ax.legend(loc="best")
+    plt.tight_layout()
+    plt.savefig("tke.pdf", format="pdf")
+    plt.savefig("tke.png", format="png")
+
+    plt.figure(11)
+    ax = plt.gca()
+    plt.xlabel(
+        r"$\omega \mu_\infty / (\rho_\infty a_\infty^2)$",
+        fontsize=22,
+        fontweight="bold",
+    )
+    plt.ylabel(r"$y - 0.05~[m]$", fontsize=22, fontweight="bold")
+    plt.setp(ax.get_xmajorticklabels(), fontsize=18, fontweight="bold")
+    plt.setp(ax.get_ymajorticklabels(), fontsize=18, fontweight="bold")
+    plt.xlim([1e-9, 1e0])
+    plt.ylim([1e-7, 1e-1])
+    legend = ax.legend(loc="best")
+    plt.tight_layout()
+    plt.savefig("sdr.pdf", format="pdf")
+    plt.savefig("sdr.png", format="png")
 
     if args.show:
         plt.show()

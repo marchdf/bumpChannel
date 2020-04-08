@@ -72,6 +72,15 @@ and
 #### Pressure coefficient along the bump at t = 0.5 (1409x641 mesh)
 <img src="./wall_cp.png" alt="wall_Cf" width="400">
 
+#### Nondimensional eddy viscosity profile at x = 0.75 (1409x641 mesh)
+<img src="./nut.png" alt="nut" width="400">
+
+#### Nondimensional turbulent kinetic energy profile at x = 0.75 (1409x641 mesh)
+<img src="./tke.png" alt="tke" width="400">
+
+#### Nondimensional specific dissipation rate profile at x = 0.75 (1409x641 mesh)
+<img src="./sdr.png" alt="sdr" width="400">
+
 ## Thanks
 Thanks to Shreyas Ananthan, Ganesh Vijayakumar, and Matt Barone for
 their helpful insight and input.

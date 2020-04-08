@@ -91,8 +91,8 @@ def get_wall_values(enames):
 
 
 # ========================================================================
-def get_ux_front(enames):
-    """Get ux on the front from Exodus file."""
+def get_field_front(enames):
+    """Get fields on the front from Exodus file."""
 
     lst = []
 
@@ -103,7 +103,12 @@ def get_ux_front(enames):
         vn = ["%s" % nc.chartostring(nn) for nn in dat.variables["name_nod_var"][:]]
 
         idx_front = ssn.index("front")
-        idx_ux = vn.index("velocity_x")
+        idxs = {
+            "ux": vn.index("velocity_x"),
+            "nut": vn.index("turbulent_viscosity"),
+            "tke": vn.index("turbulent_ke"),
+            "sdr": vn.index("specific_dissipation_rate"),
+        }
 
         try:
             front_elem_idx = dat.variables["elem_ss{0:d}".format(idx_front + 1)][:] - 1
@@ -121,14 +126,11 @@ def get_ux_front(enames):
         front_z = front_coordz[actual_idx]
         front_connect1 = front_connect1[actual_idx]
 
-        front_ux = dat.variables["vals_nod_var{0:d}".format(idx_ux + 1)][
-            -1, front_connect1
-        ]
+        colnames = ["x", "z"]
+        df = pd.DataFrame(data=np.vstack((front_x, front_z)).T, columns=colnames)
+        for k, v in idxs.items():
+            df[k] = dat.variables["vals_nod_var{0:d}".format(v + 1)][-1, front_connect1]
 
-        colnames = ["x", "z", "ux"]
-        df = pd.DataFrame(
-            data=np.vstack((front_x, front_z, front_ux)).T, columns=colnames
-        )
         lst.append(df)
 
     # Save
@@ -173,12 +175,15 @@ if __name__ == "__main__":
         enames = glob.glob(os.path.join(rdir, "bumpChannel.e*"))
         owname = os.path.join(rdir, "wall_coeffs.dat")
         ouname = os.path.join(rdir, "yp_up.dat")
+        pname = os.path.join(rdir, "profiles.dat")
 
         # Derived quantities
         L = 1.5
         W = 1.0
+        mach = 0.2
         area = L * W
         u0, rho0, mu = parse_ic(yname)
+        ainf2 = (u0 / mach) ** 2
         dynPres = rho0 * 0.5 * u0 * u0
 
         # ---------------------------------------------
@@ -208,7 +213,7 @@ if __name__ == "__main__":
 
         # ---------------------------------------------
         # Also calculate Re_theta and u+
-        dfu = get_ux_front(enames)
+        dfu = get_field_front(enames)
 
         # Reshapes
         res = [int(s) for s in ppdir.split("x")]
@@ -216,6 +221,13 @@ if __name__ == "__main__":
         x = dfu["x"].values.reshape((nx, nz))
         z = dfu["z"].values.reshape((nx, nz))
         ux = dfu["ux"].values.reshape((nx, nz))
+
+        df_slc = dfu[np.fabs(dfu.x - xslice1) < 1e-12].copy()
+        df_slc.ux /= u0
+        df_slc.nut /= mu
+        df_slc.tke /= ainf2
+        df_slc.sdr *= mu / (rho0 * ainf2)
+        df_slc.to_csv(pname, index=False)
 
         # ---------------------------------------------
         # Save
